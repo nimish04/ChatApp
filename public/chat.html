@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<title>Creating a Chat Application in Node JS with Express, MongoDB, Mongoose and Socket.io</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<script src="socket.io/socket.io.js"></script>
+
+<div class="container">
+    <form action="/chat">
+    <br>
+    
+    <div class="jumbotron">
+        
+        <h1 class="dispaly-4">Start Chatting</h1>
+        <br>
+        <input id="txtName" placeholder="Name" type="text">
+        <br>
+        <input id="txtMessage" placeholder="Message"></input>
+        <br>
+        <button id="send">Send</button>
+
+    </div>
+    <div id="messages"></div>
+    
+</form>
+</div>
+
+<script>
+    var socket = io()
+
+    socket.on("chat", addChat)
+
+    $(() => {
+
+        getChats()
+
+        $("#send").click(() => {
+
+            var chatMessage = {
+                name: $("#txtName").val(), chat: $("#txtMessage").val()
+            }
+            
+            postChat(chatMessage)
+            
+        })
+    })
+
+    function postChat(chat) {
+
+        $.post("/chats", chat, 
+
+        function(response,status)
+        {
+            addChat(response)
+        })
+
+    }
+
+    function getChats() {
+
+        $.get("/chats", (chats) => {
+
+            chats.forEach(addChat)
+
+        })
+    }
+
+    function addChat(chatObj) {
+
+        $("#messages").append(`${chatObj.name} :  ${chatObj.chat}<br>`);
+    }
+
+</script>
